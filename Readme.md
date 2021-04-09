@@ -29,4 +29,4 @@ The general workflow is similar to Google Sparrowhawk, but its in pure Python:
 - certain symbol can be both silent and pronounceable (eg. minus)
 - list of abbreviations
 - certain abbreviations can also be regular words (e.g. single letters followed by period)
-- numbers (currently limited to below million and integers only)
+- decimal numbers

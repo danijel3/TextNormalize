@@ -1,6 +1,8 @@
 from enum import Enum
 from typing import List
 
+from tqdm import tqdm
+
 from strings_hr import abbreviations, sym_ignore, symbols, number_to_text
 
 print_abbrev = False
@@ -108,7 +110,7 @@ def classify(text: str) -> List[Word]:
         for st in d:
 
             T = WordType.unknown
-            if st[0].isnumeric():
+            if st[0].isdigit():
                 T = WordType.number
             elif st in abbreviations:
                 T = WordType.abbreviation
@@ -174,7 +176,7 @@ def join(words: List[Word]) -> List[Word]:
             ret.append(Word.fromSubwords(sw, WordType.time))
         elif len(words) > 1 and words[0].type == WordType.number and words[1].type == WordType.number:
             sw = []
-            while words[0].type == WordType.number:
+            while len(words) > 0 and words[0].type == WordType.number:
                 sw.append(words.pop(0))
             ret.append(Word.fromSubwords(sw, WordType.number))
         else:
@@ -209,8 +211,3 @@ if __name__ == '__main__':
     with open('wordlist', 'w') as h:
         for w in sorted(words):
             h.write(f'{w}\n')
-
-    if print_abbrev:
-        print('~~Abbreviations~~')
-        for w in abbrev_words:
-            print(w)

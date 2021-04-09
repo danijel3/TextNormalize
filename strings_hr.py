@@ -1,5 +1,7 @@
-symbols = {'%': ' posto', '@': 'et'}
-sym_ignore = {'!', '?', ',', '.', '..', '...', "'", ')', '+', '-', ':', '–', '“', '„'}
+symbols = {'%': ' posto', '@': 'et', '¾': 'tri četvrtine', '¼': 'četvrtina', '½': 'pola', '&': 'end', '°': 'stupnja',
+           '€': 'euro', 'π': 'pi'}
+sym_ignore = {'!', '?', ',', '.', '..', '...', '....', "'", '(', ')', '+', '-', ':', '–', '“', '„', '"', '/', '\\', '#',
+              '=', '¬', '´', '¸', '’', }
 
 abbreviations = {
     'HNB': 'haenbe',
@@ -48,6 +50,7 @@ abbreviations = {
 }
 
 unit2str = {
+    0: 'nula',
     1: 'jedan',
     2: 'dva',
     3: 'tri',
@@ -112,16 +115,69 @@ def number_to_text(number: int) -> str:
     if number == 0:
         return 'nula'
 
-    assert 0 < number <= 999999
+    assert number > 0
 
     ret = []
 
+    if number > 999999999999:
+        for c in str(number):
+            ret.append(unit2str[int(c)])
+        return ' '.join(ret)
+
+    bilions = number // 1000000000
+    number -= bilions * 1000000000
+    milions = number // 1000000
+    number -= milions * 1000000
     thousands = number // 1000
     number -= thousands * 1000
     hundreds = number // 100
     number -= hundreds * 100
     tens = number // 10
     units = number % 10
+
+    if bilions:
+        hundredbilions = bilions // 100
+        bilions -= hundredbilions * 100
+        tenbilions = bilions // 10
+        bilions = bilions % 10
+
+        if hundredbilions > 0:
+            ret.append(hundred2str[hundredbilions * 100])
+        if tenbilions > 1:
+            ret.append(ten2str[tenbilions * 10])
+            if bilions > 0:
+                ret.append(thunit2str[bilions])
+        elif tenbilions == 1:
+            ret.append(teen2str[10 + bilions])
+        elif bilions > 0:
+            ret.append(thunit2str[bilions])
+        if bilions == 1:
+            ret.append('milijarda')
+        elif 2 >= bilions >= 4:
+            ret.append('milijarde')
+        else:
+            ret.append('milijardi')
+
+    if milions:
+        hundredmilions = milions // 100
+        milions -= hundredmilions * 100
+        tenmilions = milions // 10
+        milions = milions % 10
+
+        if hundredmilions > 0:
+            ret.append(hundred2str[hundredmilions * 100])
+        if tenmilions > 1:
+            ret.append(ten2str[tenmilions * 10])
+            if milions > 0:
+                ret.append(unit2str[milions])
+        elif tenmilions == 1:
+            ret.append(teen2str[10 + milions])
+        elif milions > 0:
+            ret.append(unit2str[milions])
+        if milions == 1:
+            ret.append('milijun')
+        else:
+            ret.append('milijuna')
 
     if thousands:
         hundredtousands = thousands // 100
